@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+  <div class="mb-6">
+    <h1 class="text-xl font-semibold text-gray-800">Mi Perfil</h1>
+    <p class="text-sm text-gray-500 mt-0.5">Tu información médica personal. Kapi la usa para personalizar las consultas.</p>
+  </div>
+
+  <div id="profile-wrap" class="max-w-xl">
+    {% include "profile/_form.html" %}
+  </div>
+</div>
+{% endblock %}

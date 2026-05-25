@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+  <div class="mb-6">
+    <h1 class="text-xl font-semibold text-gray-800">Exportar Informe</h1>
+    <p class="text-sm text-gray-500 mt-0.5">Genera un PDF con tu historial de consultas para compartir con tu médico.</p>
+  </div>
+
+  <div class="max-w-xl space-y-4">
+    <!-- Export PDF -->
+    <div class="bg-white border border-gray-200 rounded-xl p-5">
+      <h2 class="text-sm font-semibold text-gray-700 mb-1">Informe completo</h2>
+      <p class="text-xs text-gray-500 mb-4">Incluye tu perfil médico y el historial de todas las sesiones de consulta.</p>
+      <a href="/report/export"
+         class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors">
+        Descargar PDF
+      </a>
+    </div>
+
+    <!-- Disclaimer -->
+    <p class="text-xs text-gray-400 leading-relaxed">
+      Este informe es solo orientativo y no reemplaza la evaluación de un profesional de salud.
+    </p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+  <div class="mb-6">
+    <h1 class="text-xl font-semibold text-gray-800">Configuración</h1>
+    <p class="text-sm text-gray-500 mt-0.5">Opciones de la cuenta y la aplicación.</p>
+  </div>
+
+  <div class="max-w-xl space-y-4">
+
+    <!-- Danger zone -->
+    <div class="bg-white border border-red-100 rounded-xl p-5 space-y-3">
+      <h2 class="text-sm font-semibold text-red-600">Zona de peligro</h2>
+
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <p class="text-sm text-gray-700 font-medium">Eliminar cuenta</p>
+          <p class="text-xs text-gray-500 mt-0.5">Borra tu perfil, PIN y todos los datos guardados. Esta acción no se puede deshacer.</p>
+        </div>
+        <button hx-delete="/settings/account"
+                hx-confirm="¿Estás seguro? Se eliminará tu cuenta y no podrás recuperarla."
+                class="shrink-0 border border-red-300 text-red-600 hover:bg-red-50 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+          Eliminar cuenta
+        </button>
+      </div>
+    </div>
+
+    <!-- App info -->
+    <div class="bg-white border border-gray-200 rounded-xl p-5 space-y-2">
+      <h2 class="text-sm font-semibold text-gray-700">Acerca de Kapi</h2>
+      <p class="text-xs text-gray-500 leading-relaxed">
+        Kapi es un asistente médico local diseñado para zonas rurales con acceso limitado a profesionales de salud.
+        Funciona 100% offline. <strong>No reemplaza la evaluación de un médico.</strong>
+      </p>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

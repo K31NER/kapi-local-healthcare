@@ -13,7 +13,18 @@ class SQLUserRepository(UserRepository):
     def save(self, user: User) -> User:
         existing = self.session.exec(select(UserTable)).first()
         if existing:
-            raise ValueError("Ya existe un perfil de usuario")
+            existing.full_name = user.full_name
+            existing.birth_date = user.birth_date.isoformat()
+            existing.gender = user.gender
+            existing.blood_type = user.blood_type
+            existing.allergies = json.dumps(user.allergies)
+            existing.chronic_conditions = json.dumps(user.chronic_conditions)
+            existing.emergency_contact_name = user.emergency_contact_name
+            existing.emergency_contact_phone = user.emergency_contact_phone
+            self.session.add(existing)
+            self.session.commit()
+            self.session.refresh(existing)
+            return orm_to_user(existing)
         row = user_to_orm(user)
         self.session.add(row)
         self.session.commit()

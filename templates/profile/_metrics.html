@@ -1,0 +1,54 @@
+<div class="mb-4 px-4 py-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-sm text-emerald-700 font-medium">
+  Perfil guardado correctamente.
+</div>
+
+<div class="bg-white border border-gray-200 rounded-xl p-5 space-y-4">
+  <h2 class="text-base font-semibold text-gray-800">{{ user.full_name }}</h2>
+  <dl class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+    <div>
+      <dt class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">Fecha de nacimiento</dt>
+      <dd class="text-gray-700">{{ user.birth_date }}</dd>
+    </div>
+    <div>
+      <dt class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">Género</dt>
+      <dd class="text-gray-700">{{ user.gender }}</dd>
+    </div>
+    <div>
+      <dt class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">Tipo de sangre</dt>
+      <dd class="text-gray-700">{{ user.blood_type }}</dd>
+    </div>
+    <div>
+      <dt class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">Contacto de emergencia</dt>
+      <dd class="text-gray-700">{{ user.emergency_contact_name }} · {{ user.emergency_contact_phone }}</dd>
+    </div>
+    {% if user.allergies %}
+    <div class="col-span-2">
+      <dt class="text-xs text-gray-400 uppercase tracking-wide mb-1">Alergias</dt>
+      <dd class="flex flex-wrap gap-1">
+        {% for a in user.allergies %}
+        <span class="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded-full">{{ a }}</span>
+        {% endfor %}
+      </dd>
+    </div>
+    {% endif %}
+    {% if user.chronic_conditions %}
+    <div class="col-span-2">
+      <dt class="text-xs text-gray-400 uppercase tracking-wide mb-1">Condiciones crónicas</dt>
+      <dd class="flex flex-wrap gap-1">
+        {% for c in user.chronic_conditions %}
+        <span class="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">{{ c }}</span>
+        {% endfor %}
+      </dd>
+    </div>
+    {% endif %}
+  </dl>
+  <div class="pt-2 border-t border-gray-100 flex gap-3">
+    <a href="/profile"
+       class="text-sm text-emerald-700 hover:underline">Editar perfil →</a>
+    <button hx-delete="/profile"
+            hx-confirm="¿Eliminar tu perfil? Esta acción no se puede deshacer."
+            class="text-sm text-red-400 hover:text-red-600 hover:underline">
+      Eliminar perfil
+    </button>
+  </div>
+</div>

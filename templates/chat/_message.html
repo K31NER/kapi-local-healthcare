@@ -1,0 +1,72 @@
+<!-- Burbuja del usuario -->
+<div class="flex justify-end">
+  <div class="max-w-sm lg:max-w-lg bg-emerald-600 text-white rounded-2xl rounded-br-sm px-4 py-2.5 text-sm leading-relaxed">
+    {{ question }}
+  </div>
+</div>
+
+<!-- Burbuja de Kapi con streaming Alpine.js -->
+<div class="flex justify-start"
+     x-data='kapiMessage({{ question | tojson }}, {{ session_id | tojson }})'
+     x-init="start()">
+  <div class="max-w-sm lg:max-w-xl bg-white border border-gray-200 rounded-2xl rounded-bl-sm px-4 py-3 text-sm shadow-sm space-y-2">
+
+    <!-- Pensando -->
+    <div x-show="thinking" class="flex items-center gap-2 text-gray-400 text-xs">
+      <svg class="animate-spin h-3 w-3 shrink-0" viewBox="0 0 24 24" fill="none">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+      </svg>
+      Analizando tu consulta…
+    </div>
+
+    <!-- Error -->
+    <div x-show="!!error" x-text="error" class="text-red-500 text-xs"></div>
+
+    <!-- Texto de respuesta -->
+    <div x-show="!thinking || text.length > 0" x-html="marked.parse(text)" class="prose-kapi text-sm leading-relaxed text-gray-800"></div>
+
+    <!-- Datos estructurados -->
+    <div x-show="done && !error" class="border-t border-gray-100 pt-2 space-y-2">
+
+      <!-- Badge de urgencia -->
+      <template x-if="urgency">
+        <span class="inline-block text-xs font-semibold px-3 py-0.5 rounded-full"
+              :class="badgeClass()" x-text="badgeLabel()">
+        </span>
+      </template>
+
+      <!-- Pasos recomendados -->
+      <template x-if="steps.length > 0">
+        <details class="text-xs">
+          <summary class="text-gray-500 cursor-pointer select-none list-none flex items-center gap-1 hover:text-gray-700">
+            <span>▶</span> Pasos recomendados (<span x-text="steps.length"></span>)
+          </summary>
+          <ol class="mt-2 space-y-1 pl-3 text-gray-600">
+            <template x-for="(step, i) in steps" :key="i">
+              <li><span class="font-medium" x-text="(i+1) + '.'"></span> <span x-text="step"></span></li>
+            </template>
+          </ol>
+        </details>
+      </template>
+
+      <!-- Resumen clínico -->
+      <template x-if="Object.keys(summary).length > 0">
+        <details class="text-xs">
+          <summary class="text-gray-500 cursor-pointer select-none list-none flex items-center gap-1 hover:text-gray-700">
+            <span>▶</span> Resumen clínico
+          </summary>
+          <dl class="mt-2 space-y-0.5 text-gray-600">
+            <template x-for="[k, v] in Object.entries(summary)" :key="k">
+              <div class="flex gap-1 flex-wrap">
+                <dt class="font-medium" x-text="k + ':'"></dt>
+                <dd x-text="v"></dd>
+              </div>
+            </template>
+          </dl>
+        </details>
+      </template>
+
+    </div>
+  </div>
+</div>

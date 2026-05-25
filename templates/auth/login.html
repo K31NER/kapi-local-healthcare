@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kapi — Acceso</title>
+  <link rel="icon" type="image/png" href="/media/logo.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.14.8/dist/cdn.min.js"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-2xl mx-4">
+    <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-10 flex gap-10">
+      <!-- Branding -->
+      <div class="w-40 shrink-0 flex flex-col items-center justify-center text-center">
+        <img src="/media/logo.png" alt="Kapi" class="w-16 h-16 mx-auto mb-3 object-contain rounded-[25px]">
+        <div class="text-2xl font-bold text-gray-900 mb-1">Kapi</div>
+        <div class="text-sm text-gray-500">Asistente Médico Local</div>
+        <div class="text-xs text-gray-400 mt-2">Offline · Privado · Para ti</div>
+      </div>
+      <!-- Área de formulario (reemplazada por HTMX en pasos 1 y 2) -->
+      <div class="flex-1 min-w-0" id="auth-form">
+        {% include partial %}
+      </div>
+    </div>
+  </div>
+  <script>
+  function multiSelect(allOptions, initial) {
+    return {
+      options: allOptions, selected: [...(initial||[])], search: '', open: false,
+      get filtered() {
+        if (!this.search) return this.options;
+        return this.options.filter(o => o.toLowerCase().includes(this.search.toLowerCase()));
+      },
+      toggle(opt) { const i=this.selected.indexOf(opt); if(i===-1) this.selected.push(opt); else this.selected.splice(i,1); },
+      addCustom() { const v=this.search.trim(); if(v&&!this.selected.includes(v)) this.selected.push(v); this.search=''; this.open=false; },
+      remove(opt) { this.selected=this.selected.filter(s=>s!==opt); }
+    }
+  }
+  </script>
+</body>
+</html>

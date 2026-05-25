@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     EMBEDDING_MODEL: str = "intfloat/multilingual-e5-small"
     EMBEDDINGS_CACHE_PATH: str = "./models/embeddings"
     MODE:str = "llama"
+    SECRET_KEY: str
     class Config:
         env_file = ".env"
         
