@@ -1,0 +1,31 @@
+[project]
+name = "telemedicina"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "agno>=2.6.5",
+    "chromadb>=1.5.9",
+    "fastapi[standard]>=0.136.1",
+    "fpdf2>=2.8.7",
+    "huggingface-hub>=1.14.0",
+    "llama-cpp-python[server]>=0.3.22",
+    "ollama>=0.6.2",
+    "openai>=2.36.0",
+    "pandas>=3.0.3",
+    "pydantic-settings>=2.14.0",
+    "pypdf>=6.12.1",
+    "sentence-transformers>=5.4.1",
+    "sqlmodel>=0.0.38",
+    "streamlit>=1.57.0",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.0.3",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
