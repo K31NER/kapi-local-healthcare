@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+  <div class="mb-6">
+    <h1 class="text-xl font-semibold text-gray-800">Base de Conocimientos</h1>
+    <p class="text-sm text-gray-500 mt-0.5">Sube documentos médicos para que Kapi los use como referencia en las consultas.</p>
+  </div>
+
+  <div class="max-w-xl space-y-6">
+    <!-- Upload form -->
+    <div class="bg-white border border-gray-200 rounded-xl p-5 space-y-4">
+      <h2 class="text-sm font-semibold text-gray-700">Subir documento</h2>
+
+      <form hx-post="/knowledge/ingest"
+            hx-target="#ingest-result"
+            hx-swap="innerHTML"
+            hx-encoding="multipart/form-data"
+            class="space-y-4">
+
+        <!-- File picker -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Archivo *</label>
+          <input type="file" name="file" required accept=".pdf,.txt,.md"
+                 class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
+          <p class="text-xs text-gray-400 mt-1">Formatos: PDF, TXT, MD</p>
+        </div>
+
+        <!-- Tipo -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de fuente</label>
+          <select name="tipo"
+                  class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <option value="oficial">Oficial</option>
+            <option value="local">Local</option>
+            <option value="usuario">Usuario</option>
+          </select>
+        </div>
+
+        <!-- Categoría y subtipo -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+            <select name="categoria"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="informe_medico">Informe médico</option>
+              <option value="protocolo">Protocolo</option>
+              <option value="guia_clinica">Guía clínica</option>
+              <option value="farmacologia">Farmacología</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Subtipo</label>
+            <select name="subtipo"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="guia">Guía</option>
+              <option value="resumen">Resumen</option>
+              <option value="referencia">Referencia</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit"
+                class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium py-2.5 rounded-lg transition-colors">
+          Indexar documento
+        </button>
+      </form>
+
+      <div id="ingest-result"></div>
+    </div>
+
+    <p class="text-xs text-gray-400 leading-relaxed">
+      Los documentos indexados se almacenan localmente en tu dispositivo y son usados solo por Kapi.
+    </p>
+  </div>
+</div>
+{% endblock %}

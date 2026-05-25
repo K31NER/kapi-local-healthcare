@@ -1,0 +1,136 @@
+{% if error %}
+<div class="mb-4 px-4 py-2 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">{{ error }}</div>
+{% endif %}
+
+<form hx-post="/profile" hx-target="#profile-wrap" hx-swap="innerHTML" class="space-y-5">
+
+  <!-- Nombre -->
+  <div>
+    <label class="block text-sm font-medium text-gray-700 mb-1">Nombre completo *</label>
+    <input type="text" name="full_name" required
+           value="{{ user.full_name if user else '' }}"
+           placeholder="María García López"
+           class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+  </div>
+
+  <!-- Fecha y género -->
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de nacimiento *</label>
+      <input type="date" name="birth_date" required
+             value="{{ user.birth_date if user else '' }}"
+             max="{{ today }}"
+             class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Género *</label>
+      <select name="gender" required
+              class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+        <option value="" disabled {% if not user %}selected{% endif %}>Seleccionar…</option>
+        {% for g in genders %}
+        <option value="{{ g }}" {% if user and user.gender == g %}selected{% endif %}>{{ g }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <!-- Tipo de sangre -->
+  <div>
+    <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de sangre *</label>
+    <div class="flex flex-wrap gap-2">
+      {% for bt in blood_types %}
+      <label class="flex items-center gap-1.5 text-sm cursor-pointer">
+        <input type="radio" name="blood_type" value="{{ bt }}" required
+               {% if user and user.blood_type == bt %}checked{% endif %}
+               class="accent-emerald-600">
+        <span>{{ bt }}</span>
+      </label>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Alergias -->
+  <div x-data="multiSelect({{ allergies_options | tojson }}, {{ (user.allergies if user else []) | tojson }})"
+       class="space-y-1">
+    <label class="block text-sm font-medium text-gray-700">Alergias</label>
+    <div class="flex flex-wrap gap-1 min-h-[24px]">
+      <template x-for="item in selected" :key="item">
+        <span class="inline-flex items-center gap-1 bg-red-50 text-red-700 border border-red-200 text-xs px-2 py-0.5 rounded-full">
+          <span x-text="item"></span>
+          <button type="button" @click="remove(item)" class="text-red-400 hover:text-red-700 leading-none">×</button>
+          <input type="hidden" name="allergies" :value="item">
+        </span>
+      </template>
+    </div>
+    <div class="relative">
+      <input type="text" x-model="search" @focus="open=true" @blur="setTimeout(()=>open=false,150)"
+             @keydown.enter.prevent="addCustom()"
+             placeholder="Buscar o escribir para agregar…"
+             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+      <div x-show="open && filtered.length > 0"
+           class="absolute z-10 w-full border border-gray-200 rounded-lg mt-1 max-h-36 overflow-y-auto bg-white shadow-sm">
+        <template x-for="opt in filtered" :key="opt">
+          <div @mousedown.prevent="toggle(opt)"
+               class="px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 flex items-center justify-between">
+            <span x-text="opt"></span>
+            <span x-show="selected.includes(opt)" class="text-emerald-600 text-xs font-bold">✓</span>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+
+  <!-- Condiciones crónicas -->
+  <div x-data="multiSelect({{ conditions_options | tojson }}, {{ (user.chronic_conditions if user else []) | tojson }})"
+       class="space-y-1">
+    <label class="block text-sm font-medium text-gray-700">Condiciones crónicas</label>
+    <div class="flex flex-wrap gap-1 min-h-[24px]">
+      <template x-for="item in selected" :key="item">
+        <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs px-2 py-0.5 rounded-full">
+          <span x-text="item"></span>
+          <button type="button" @click="remove(item)" class="text-amber-400 hover:text-amber-700 leading-none">×</button>
+          <input type="hidden" name="chronic_conditions" :value="item">
+        </span>
+      </template>
+    </div>
+    <div class="relative">
+      <input type="text" x-model="search" @focus="open=true" @blur="setTimeout(()=>open=false,150)"
+             @keydown.enter.prevent="addCustom()"
+             placeholder="Buscar o escribir para agregar…"
+             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+      <div x-show="open && filtered.length > 0"
+           class="absolute z-10 w-full border border-gray-200 rounded-lg mt-1 max-h-36 overflow-y-auto bg-white shadow-sm">
+        <template x-for="opt in filtered" :key="opt">
+          <div @mousedown.prevent="toggle(opt)"
+               class="px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 flex items-center justify-between">
+            <span x-text="opt"></span>
+            <span x-show="selected.includes(opt)" class="text-amber-600 text-xs font-bold">✓</span>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contacto de emergencia -->
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Contacto de emergencia *</label>
+      <input type="text" name="emergency_contact_name" required
+             value="{{ user.emergency_contact_name if user else '' }}"
+             placeholder="Juan García"
+             class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono *</label>
+      <input type="tel" name="emergency_contact_phone" required
+             value="{{ user.emergency_contact_phone if user else '' }}"
+             placeholder="+57 300 123 4567"
+             class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+    </div>
+  </div>
+
+  <button type="submit"
+          class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm transition-colors">
+    Guardar perfil
+  </button>
+</form>

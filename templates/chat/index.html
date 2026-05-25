@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex flex-col" style="height: calc(100vh - 4rem);">
+
+  <div class="flex items-start justify-between mb-5 shrink-0">
+    <div>
+      <h1 class="text-xl font-semibold text-gray-800">Consulta Médica</h1>
+      <p class="text-sm text-gray-500 mt-0.5">Describe tus síntomas con detalle. El agente recuerda el contexto de la sesión.</p>
+    </div>
+    <button hx-post="/chat/new-session"
+            hx-target="#messages" hx-swap="innerHTML"
+            class="text-sm border border-gray-300 px-3 py-1.5 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors shrink-0 mt-1">
+      Nueva sesión
+    </button>
+  </div>
+
+  <!-- Área de mensajes -->
+  <div id="messages" class="flex-1 overflow-y-auto space-y-4 mb-4 pr-1">
+  </div>
+
+  <!-- Input -->
+  <form hx-post="/chat/send"
+        hx-target="#messages" hx-swap="beforeend"
+        hx-on::after-request="this.reset(); document.getElementById('messages').scrollTop = 999999;"
+        class="shrink-0 flex gap-2">
+    <input type="hidden" id="chat-session-id" name="session_id" value="{{ session_id }}">
+    <textarea name="question" rows="2"
+              placeholder="Ej: Tengo fiebre de 38°C y dolor de garganta desde ayer…"
+              class="flex-1 border border-gray-300 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              @keydown.ctrl.enter="$el.closest('form').requestSubmit()"></textarea>
+    <button type="submit"
+            class="self-end bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-xl text-sm font-medium transition-colors">
+      Enviar
+    </button>
+  </form>
+
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+<h2 class="text-xl font-semibold text-gray-800 mb-1">PIN de acceso</h2>
+<div class="flex gap-2 text-xs mb-5">
+  <span class="text-gray-400 line-through">① Info básica</span>
+  <span class="text-gray-400">→</span>
+  <span class="text-gray-400 line-through">② Salud</span>
+  <span class="text-gray-400">→</span>
+  <span class="font-semibold text-emerald-600">③ PIN</span>
+</div>
+
+{% if error %}
+<div class="mb-4 px-4 py-2 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">{{ error }}</div>
+{% endif %}
+
+<form method="post" action="/auth/register/step3" class="space-y-4">
+  <div>
+    <label class="block text-sm font-medium text-gray-700 mb-1">PIN (mínimo 4 caracteres) *</label>
+    <input type="password" name="pin1" autofocus
+           class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700 mb-1">Confirmar PIN *</label>
+    <input type="password" name="pin2"
+           class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+  </div>
+  <p class="text-xs text-gray-400">Este PIN protege el acceso local a Kapi. No se puede recuperar si lo olvidas.</p>
+  <div class="flex gap-2">
+    <button type="button"
+            hx-get="/auth/register/step2" hx-target="#auth-form" hx-swap="innerHTML"
+            class="flex-1 border border-gray-300 text-gray-600 font-medium py-2.5 rounded-lg text-sm hover:bg-gray-50 transition-colors">
+      ← Volver
+    </button>
+    <button type="submit"
+            class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm transition-colors">
+      Crear cuenta
+    </button>
+  </div>
+</form>
