@@ -1,9 +1,10 @@
 from typing import Generator
-from Repositories.consultation_repository import ConsultationRepository
 from Infrastructure.Agents.workflow import kapi
+from Repositories.user_repository import UserRepository
+from Infrastructure.Agents.schemas.agent import InputModel
+from Repositories.consultation_repository import ConsultationRepository
 from Domain.chat import ChatEvent, ContentEvent, DoneEvent, ErrorEvent, ThinkingEvent
 
-# Re-exportamos los eventos para que API/routers/chat.py no cambie sus imports
 __all__ = [
     "StreamChat",
     "ChatEvent",
@@ -13,10 +14,10 @@ __all__ = [
     "ThinkingEvent",
 ]
 
-
 class StreamChat:
-    def __init__(self, save_repo: ConsultationRepository):
+    def __init__(self, save_repo: ConsultationRepository, user_repo: UserRepository):
         self._save_repo = save_repo
+        self._user_repo = user_repo
 
     def execute(
         self,
@@ -24,4 +25,10 @@ class StreamChat:
         session_id: str,
         user_id: str,
     ) -> Generator[ChatEvent, None, None]:
-        return kapi.run_stream(question, session_id, user_id, self._save_repo)
+        
+        # Inyectamos el contexto del usuario
+        user_input = InputModel(
+            question=question,
+            context_user=self._user_repo.get_user_context()
+        )
+        return kapi.run_stream(user_input, session_id, user_id, self._save_repo)

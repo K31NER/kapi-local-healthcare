@@ -13,7 +13,7 @@
 <form hx-post="/auth/register/step2" hx-target="#auth-form" hx-swap="innerHTML" class="space-y-4">
 
   <!-- Alergias -->
-  <div x-data="multiSelect({{ allergies_options | tojson }}, [])" class="space-y-1">
+  <div x-data='multiSelect({{ allergies_options | tojson }}, [])' class="space-y-1">
     <label class="block text-sm font-medium text-gray-700">Alergias</label>
     <div class="flex flex-wrap gap-1 min-h-[24px]">
       <template x-for="item in selected" :key="item">
@@ -43,7 +43,7 @@
   </div>
 
   <!-- Enfermedades crónicas -->
-  <div x-data="multiSelect({{ conditions_options | tojson }}, [])" class="space-y-1">
+  <div x-data='multiSelect({{ conditions_options | tojson }}, [])' class="space-y-1">
     <label class="block text-sm font-medium text-gray-700">Enfermedades crónicas</label>
     <div class="flex flex-wrap gap-1 min-h-[24px]">
       <template x-for="item in selected" :key="item">

@@ -20,6 +20,7 @@ vector_db = ChromaDb(
 knowledge_db= Knowledge(
     name="Documentos-Medicos",       
     vector_db=vector_db,
+    max_results=15
 )
 
 # Carga inicial 

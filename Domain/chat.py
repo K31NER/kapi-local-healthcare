@@ -21,4 +21,9 @@ class ErrorEvent:
 class ThinkingEvent:
     text: str
 
+@dataclass
+class Userinput:
+    question: str
+    user_context: str
+    
 ChatEvent = Union[ContentEvent, DoneEvent, ErrorEvent, ThinkingEvent]

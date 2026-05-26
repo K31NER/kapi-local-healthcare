@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from Domain.user import User
+from Domain.user import User, CacheUser
 
 
 class UserRepository(ABC):
@@ -14,3 +14,6 @@ class UserRepository(ABC):
 
     @abstractmethod
     def delete(self) -> None: ...
+    
+    @abstractmethod
+    def get_user_context(self) -> CacheUser | None: ...
