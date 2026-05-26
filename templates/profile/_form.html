@@ -50,7 +50,7 @@
   </div>
 
   <!-- Alergias -->
-  <div x-data="multiSelect({{ allergies_options | tojson }}, {{ (user.allergies if user else []) | tojson }})"
+  <div x-data='multiSelect({{ allergies_options | tojson }}, {{ (user.allergies if user else []) | tojson }})'
        class="space-y-1">
     <label class="block text-sm font-medium text-gray-700">Alergias</label>
     <div class="flex flex-wrap gap-1 min-h-[24px]">
@@ -81,7 +81,7 @@
   </div>
 
   <!-- Condiciones crónicas -->
-  <div x-data="multiSelect({{ conditions_options | tojson }}, {{ (user.chronic_conditions if user else []) | tojson }})"
+  <div x-data='multiSelect({{ conditions_options | tojson }}, {{ (user.chronic_conditions if user else []) | tojson }})'
        class="space-y-1">
     <label class="block text-sm font-medium text-gray-700">Condiciones crónicas</label>
     <div class="flex flex-wrap gap-1 min-h-[24px]">

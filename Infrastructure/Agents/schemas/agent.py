@@ -1,8 +1,9 @@
 from pydantic import BaseModel, Field
 from typing import Dict, List,Optional
-
+from Domain.user import CacheUser
 class InputModel(BaseModel):
     question: str
+    context_user: CacheUser = Field(...,description="Contexto del usuario")
 
 class ResponseModel(BaseModel):
     analysis: str = Field(...,description="Analisis de detallado del sintoma del usuario")

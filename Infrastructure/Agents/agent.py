@@ -30,12 +30,12 @@ consult_agent = Agent(
     enable_user_memories=True,
     add_memories_to_context=True,
     enable_session_summaries=True,        # genera el resumen
-    add_session_summary_to_context=True, 
+    add_session_summary_to_context=False, 
     # Activamos el RAG
     knowledge=knowledge_db,
-    search_knowledge=True,
-    add_knowledge_to_context=False,
-    enable_agentic_knowledge_filters=True,
+    search_knowledge=False,
+    add_knowledge_to_context=True,
+    enable_agentic_knowledge_filters=False,
     debug_mode=True,
     debug_level=2
 )

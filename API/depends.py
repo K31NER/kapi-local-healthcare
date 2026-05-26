@@ -1,23 +1,20 @@
 from fastapi import Depends
 from sqlmodel import Session
-
+from Use_cases.user.get_user import GetUser
 from Use_cases.chat.stream_chat import StreamChat
-from Use_cases.knowledge.add_document import AddDocument
 from Use_cases.report.export_pdf import ExportPDF
 from Use_cases.user.create_user import CreateUser
 from Use_cases.user.delete_user import DeleteUser
-from Use_cases.user.get_user import GetUser
 from Use_cases.user.update_user import UpdateUser
-from Use_cases.consultation.save_consultation import SaveConsultation
-
 from Repositories.user_repository import UserRepository
-from Repositories.consultation_repository import ConsultationRepository
-from Repositories.knowledge_repository import KnowledgeRepository
-
+from Use_cases.knowledge.add_document import AddDocument
 from Infrastructure.Databases.sql.conexion import get_session
+from Repositories.knowledge_repository import KnowledgeRepository
+from Use_cases.consultation.save_consultation import SaveConsultation
+from Repositories.consultation_repository import ConsultationRepository
 from Infrastructure.Databases.sql.user_repository import SQLUserRepository
-from Infrastructure.Databases.sql.consultation_repository import SQLConsultationRepository
 from Infrastructure.Knowledge.chroma_repository import ChromaKnowledgeRepository
+from Infrastructure.Databases.sql.consultation_repository import SQLConsultationRepository
 
 
 def get_user_repo(session: Session = Depends(get_session)) -> UserRepository:
@@ -61,8 +58,9 @@ def get_export_pdf(
 
 def get_stream_chat(
     consult_repo: ConsultationRepository = Depends(get_consultation_repo),
+    user_repo: UserRepository = Depends(get_user_repo),
 ) -> StreamChat:
-    return StreamChat(consult_repo)
+    return StreamChat(consult_repo, user_repo)
 
 
 def get_add_document(

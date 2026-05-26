@@ -1,13 +1,13 @@
 import json
-from Domain.user import User
 from sqlmodel import Session, select
+from Domain.user import CacheUser, User
 from Repositories.user_repository import UserRepository
 from Infrastructure.Databases.sql.models import UserTable
 from Infrastructure.Databases.sql.mappers import user_to_orm, orm_to_user
 
-
 class SQLUserRepository(UserRepository):
     def __init__(self, session: Session):
+        self._cache = {}
         self.session = session
 
     def save(self, user: User) -> User:
@@ -50,6 +50,9 @@ class SQLUserRepository(UserRepository):
         self.session.add(row)
         self.session.commit()
         self.session.refresh(row)
+        
+        # Limpiamos el cache
+        self._cache = {}
         return orm_to_user(row)
 
     def delete(self) -> None:
@@ -57,3 +60,30 @@ class SQLUserRepository(UserRepository):
         if row:
             self.session.delete(row)
             self.session.commit()
+            self._cache = {}
+    
+    def get_user_context(self) -> CacheUser | None:
+        if "user" in self._cache:
+            return self._cache["user"]
+
+        row = self.session.exec(select(UserTable)).first()
+        if not row:
+            return None
+
+        from datetime import date
+        birth_date = date.fromisoformat(row.birth_date)
+        today = date.today()
+        age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+
+        user_context = CacheUser(
+            full_name=row.full_name,
+            age=age,
+            gender=row.gender,
+            blood_type=row.blood_type,
+            allergies=json.loads(row.allergies) if row.allergies else [],
+            chronic_conditions=json.loads(row.chronic_conditions) if row.chronic_conditions else []
+        )
+        self._cache["user"] = user_context
+        return user_context
+        
+        

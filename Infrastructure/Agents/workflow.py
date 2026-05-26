@@ -1,6 +1,8 @@
 from typing import Generator
 from datetime import datetime
 from Domain.consultation import Consultation
+from Infrastructure.Agents.schemas.agent import InputModel
+from Infrastructure.Agents.prompt import CONSULT_AGENT_PROMPT
 from Infrastructure.Agents.agent import consult_agent, redacter_agent
 from Repositories.consultation_repository import ConsultationRepository
 from Domain.chat import ChatEvent,ThinkingEvent,ContentEvent,ErrorEvent,DoneEvent
@@ -11,18 +13,42 @@ class LocalKapi:
         self.consult = consult
         self.redacter = redacter
 
-    def run(self, input):
+    def run(self, input: InputModel):
         """Responde de forma síncrona. agno gestiona el RAG internamente."""
+        original_instructions = self.consult.instructions
         try:
+            contexto_paciente = self._build_patient_context(input)
+            self.consult.instructions = f"{CONSULT_AGENT_PROMPT}{contexto_paciente}"
+
             response = self.consult.run(input.question)
             redacted = self.redacter.run(response.content)
             return redacted.content
         except Exception as e:
             raise RuntimeError(f"Error en el agente: {e}") from e
+        finally:
+            self.consult.instructions = original_instructions
+
+    def _build_patient_context(self, user_input: InputModel) -> str:
+        allergies = ", ".join(user_input.context_user.allergies) if user_input.context_user.allergies else "Ninguna registrada"
+        chronic_conditions = (
+            ", ".join(user_input.context_user.chronic_conditions)
+            if user_input.context_user.chronic_conditions
+            else "Ninguna registrada"
+        )
+
+        return (
+            "\n\n[INFORMACION RELEVANTE DEL PACIENTE]\n"
+            f"Nombre completo: {user_input.context_user.full_name}\n"
+            f"Edad: {user_input.context_user.age}\n"
+            f"Género: {user_input.context_user.gender}\n"
+            f"Tipo de sangre: {user_input.context_user.blood_type}\n"
+            f"Alergias: {allergies}\n"
+            f"Enfermedades crónicas: {chronic_conditions}\n"
+        )
 
     def run_stream(
         self,
-        question: str,
+        user_input: InputModel,
         session_id: str,
         user_id: str,
         save_repo: ConsultationRepository,
@@ -40,11 +66,15 @@ class LocalKapi:
         _logger = logging.getLogger(__name__)
         _tool_started = getattr(RunEvent, "tool_call_started", None)
         _reasoning_step = getattr(RunEvent, "reasoning_step", None)
+        original_instructions = self.consult.instructions
+        contexto_paciente = self._build_patient_context(user_input)
+        self.consult.instructions = f"{CONSULT_AGENT_PROMPT}{contexto_paciente}"
+        pregunta_limpia = user_input.question
 
         full_response = ""
         try:
             stream = self.consult.run(
-                question,
+                pregunta_limpia,
                 session_id=session_id,
                 stream=True,
                 user_id=user_id,
@@ -64,6 +94,8 @@ class LocalKapi:
         except Exception as e:
             yield ErrorEvent(error=str(e))
             return
+        finally:
+            self.consult.instructions = original_instructions
 
         try:
             result = self.redacter.run(full_response)
@@ -73,7 +105,7 @@ class LocalKapi:
             summary = (structured.summary if structured else None) or {}
 
             save_repo.save(Consultation(
-                question=question,
+                question=user_input.question,
                 answer=answer,
                 steps=steps,
                 summary=summary,
@@ -84,7 +116,7 @@ class LocalKapi:
             _logger.error("Error en redacter/guardado: %s", e, exc_info=True)
             answer = full_response or "Sin respuesta disponible"
             save_repo.save(Consultation(
-                question=question,
+                question=user_input.question,
                 answer=answer,
                 steps=[],
                 summary={},
