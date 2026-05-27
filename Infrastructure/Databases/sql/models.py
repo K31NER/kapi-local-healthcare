@@ -1,7 +1,6 @@
 from typing import Optional
 from sqlmodel import SQLModel, Field
 
-
 class UserTable(SQLModel, table=True):
     __tablename__ = "users"
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -20,6 +19,7 @@ class ConsultationTable(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     question: str
     answer: str
-    steps: str    # JSON: '["Descansa", "Hidratate"]'
-    summary: str  # JSON: '{"urgency": "low"}'
+    steps: str       # JSON: '["Descansa", "Hidratate"]'
+    status: str      # "Normal" | "Moderado" | "Crítico"
     created_at: str  # ISO datetime string "YYYY-MM-DDTHH:MM:SS"
+    session_id: str = Field(default="")

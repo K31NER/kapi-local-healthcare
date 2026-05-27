@@ -23,50 +23,20 @@
     <!-- Error -->
     <div x-show="!!error" x-text="error" class="text-red-500 text-xs"></div>
 
-    <!-- Texto de respuesta -->
-    <div x-show="!thinking || text.length > 0" x-html="marked.parse(text)" class="prose-kapi text-sm leading-relaxed text-gray-800"></div>
+    <!-- Texto de respuesta (Markdown renderizado en tiempo real) -->
+    <div x-show="!thinking || text.length > 0"
+         x-html="marked.parse(text)"
+         class="prose-kapi text-sm leading-relaxed text-gray-800"></div>
 
-    <!-- Datos estructurados -->
-    <div x-show="done && !error" class="border-t border-gray-100 pt-2 space-y-2">
-
-      <!-- Badge de urgencia -->
-      <template x-if="urgency">
-        <span class="inline-block text-xs font-semibold px-3 py-0.5 rounded-full"
-              :class="badgeClass()" x-text="badgeLabel()">
-        </span>
-      </template>
-
-      <!-- Pasos recomendados -->
-      <template x-if="steps.length > 0">
-        <details class="text-xs">
-          <summary class="text-gray-500 cursor-pointer select-none list-none flex items-center gap-1 hover:text-gray-700">
-            <span>▶</span> Pasos recomendados (<span x-text="steps.length"></span>)
-          </summary>
-          <ol class="mt-2 space-y-1 pl-3 text-gray-600">
-            <template x-for="(step, i) in steps" :key="i">
-              <li><span class="font-medium" x-text="(i+1) + '.'"></span> <span x-text="step"></span></li>
-            </template>
-          </ol>
-        </details>
-      </template>
-
-      <!-- Resumen clínico -->
-      <template x-if="Object.keys(summary).length > 0">
-        <details class="text-xs">
-          <summary class="text-gray-500 cursor-pointer select-none list-none flex items-center gap-1 hover:text-gray-700">
-            <span>▶</span> Resumen clínico
-          </summary>
-          <dl class="mt-2 space-y-0.5 text-gray-600">
-            <template x-for="[k, v] in Object.entries(summary)" :key="k">
-              <div class="flex gap-1 flex-wrap">
-                <dt class="font-medium" x-text="k + ':'"></dt>
-                <dd x-text="v"></dd>
-              </div>
-            </template>
-          </dl>
-        </details>
-      </template>
-
+    <!-- Badge de triaje (aparece al terminar el stream) -->
+    <div x-show="done && status" class="pt-1">
+      <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full"
+            :class="badgeClass()">
+        <span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 500"
+              x-text="badgeIcon()"></span>
+        <span x-text="status"></span>
+      </span>
     </div>
+
   </div>
 </div>

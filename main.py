@@ -15,6 +15,7 @@ from API.routers.web import profile as web_profile
 from API.routers.web import settings as web_settings
 from API.routers import knowledge as knowledge_router
 from API.routers.web import knowledge as web_knowledge
+from API.routers.web import sessions as web_sessions
 from starlette.middleware.sessions import SessionMiddleware
 
 SECRET_KEY = settings.SECRET_KEY
@@ -44,6 +45,7 @@ app.include_router(web_profile.router)
 app.include_router(web_report.router)
 app.include_router(web_knowledge.router)
 app.include_router(web_settings.router)
+app.include_router(web_sessions.router)
 
 @app.get("/", include_in_schema=False)
 def root():

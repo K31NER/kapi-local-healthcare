@@ -9,6 +9,7 @@
   <script defer src="https://unpkg.com/alpinejs@3.14.8/dist/cdn.min.js"></script>
   <script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
   <style>
     .prose-kapi h1,.prose-kapi h2,.prose-kapi h3{font-weight:600;margin:.4rem 0}
     .prose-kapi h1{font-size:1.05rem}.prose-kapi h2{font-size:1rem}.prose-kapi h3{font-size:.95rem}
@@ -40,6 +41,7 @@
     <nav class="flex-1 px-3 py-4 space-y-1">
       {% set nav_items = [
         ("/chat",      "Consulta"),
+        ("/sessions",  "Sesiones"),
         ("/profile",   "Mi Perfil"),
         ("/report",    "Exportar Informe"),
         ("/knowledge", "Base de Conocimientos"),
@@ -83,8 +85,7 @@
   /* ── kapiMessage: gestiona el streaming SSE del chat ─────────────────── */
   function kapiMessage(question, sessionId) {
     return {
-      text: '', thinking: true, done: false, error: null,
-      steps: [], summary: {}, urgency: '',
+      text: '', thinking: true, done: false, error: null, status: '',
       async start() {
         try {
           const resp = await fetch('/chat/stream', {
@@ -114,10 +115,9 @@
                 this.thinking = false;
                 this.text += payload.text;
               } else if (type === 'done') {
-                this.thinking = false; this.done = true;
-                this.steps   = payload.steps   || [];
-                this.summary = payload.summary  || {};
-                this.urgency = (payload.summary || {}).urgency || '';
+                this.thinking = false;
+                this.done     = true;
+                this.status   = payload.status || '';
               } else if (type === 'error') {
                 this.thinking = false;
                 this.error = payload.error;
@@ -130,16 +130,14 @@
         }
       },
       badgeClass() {
-        const u = (this.urgency || '').toLowerCase();
-        if (u === 'high')                              return 'bg-red-100 text-red-700';
-        if (['medium','moderate','medio'].includes(u)) return 'bg-amber-100 text-amber-700';
-        return 'bg-emerald-100 text-emerald-700';
+        if (this.status === 'Crítico')  return 'bg-red-100 text-red-700 border border-red-200';
+        if (this.status === 'Moderado') return 'bg-amber-100 text-amber-700 border border-amber-200';
+        return 'bg-emerald-100 text-emerald-700 border border-emerald-200';
       },
-      badgeLabel() {
-        const u = (this.urgency || '').toLowerCase();
-        if (u === 'high')                              return 'URGENTE';
-        if (['medium','moderate','medio'].includes(u)) return 'MODERADO';
-        return 'LEVE';
+      badgeIcon() {
+        if (this.status === 'Crítico')  return 'emergency';
+        if (this.status === 'Moderado') return 'warning';
+        return 'check_circle';
       }
     }
   }

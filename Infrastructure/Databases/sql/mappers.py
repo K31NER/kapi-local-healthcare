@@ -38,9 +38,10 @@ def consultation_to_orm(c: Consultation) -> ConsultationTable:
         id=c.id,
         question=c.question,
         answer=c.answer,
-        steps=json.dumps(c.steps),
-        summary=json.dumps(c.summary),
+        steps=json.dumps(c.steps, ensure_ascii=False),
+        status=c.status,
         created_at=c.created_at.isoformat(),
+        session_id=c.session_id,
     )
 
 
@@ -50,6 +51,7 @@ def orm_to_consultation(row: ConsultationTable) -> Consultation:
         question=row.question,
         answer=row.answer,
         steps=json.loads(row.steps),
-        summary=json.loads(row.summary),
+        status=row.status,
         created_at=datetime.fromisoformat(row.created_at),
+        session_id=row.session_id,
     )

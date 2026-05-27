@@ -7,18 +7,22 @@
       <h1 class="text-xl font-semibold text-gray-800">Consulta Médica</h1>
       <p class="text-sm text-gray-500 mt-0.5">Describe tus síntomas con detalle. El agente recuerda el contexto de la sesión.</p>
     </div>
-    <button hx-post="/chat/new-session"
-            hx-target="#messages" hx-swap="innerHTML"
-            class="text-sm border border-gray-300 px-3 py-1.5 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors shrink-0 mt-1">
-      Nueva sesión
-    </button>
+    <div class="flex flex-col items-end gap-1 shrink-0">
+      <button hx-post="/chat/new-session"
+              hx-target="#messages" hx-swap="innerHTML"
+              class="text-sm border border-gray-300 px-3 py-1.5 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">
+        Nueva sesión
+      </button>
+      <span id="session-id-label"
+            class="text-xs text-gray-300 font-mono truncate max-w-[200px]"
+            title="{{ session_id }}">
+        {{ session_id[:8] }}…
+      </span>
+    </div>
   </div>
 
-  <!-- Área de mensajes -->
-  <div id="messages" class="flex-1 overflow-y-auto space-y-4 mb-4 pr-1">
-  </div>
+  <div id="messages" class="flex-1 overflow-y-auto space-y-4 mb-4 pr-1"></div>
 
-  <!-- Input -->
   <form hx-post="/chat/send"
         hx-target="#messages" hx-swap="beforeend"
         hx-on::after-request="this.reset(); document.getElementById('messages').scrollTop = 999999;"

@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
+<style>
+  #indexing-overlay { pointer-events: none; }
+  #indexing-overlay.htmx-request { pointer-events: all; }
+</style>
+
 <div>
   <div class="mb-6">
     <h1 class="text-xl font-semibold text-gray-800">Base de Conocimientos</h1>
@@ -15,6 +20,7 @@
             hx-target="#ingest-result"
             hx-swap="innerHTML"
             hx-encoding="multipart/form-data"
+            hx-indicator="#indexing-overlay"
             class="space-y-4">
 
         <!-- File picker -->
@@ -74,4 +80,17 @@
     </p>
   </div>
 </div>
+
+<!-- Pantalla de carga (controlada por hx-indicator) -->
+<div id="indexing-overlay"
+     class="htmx-indicator fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+  <div class="flex flex-col items-center gap-5 bg-white border border-gray-200 rounded-2xl shadow-xl px-10 py-8">
+    <div class="w-12 h-12 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
+    <div class="text-center">
+      <p class="text-sm font-semibold text-gray-700">Indexando documento…</p>
+      <p class="text-xs text-gray-400 mt-1">Esto puede tardar unos segundos</p>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
