@@ -79,10 +79,9 @@ class ExportPDF:
                 for j, step in enumerate(c.steps, 1):
                     pdf.set_x(pdf.l_margin)
                     pdf.multi_cell(0, 6, _sanitize(f"  {j}. {step}"))
-            if c.summary:
-                summary_str = " | ".join(f"{k}={v}" for k, v in c.summary.items())
+            if c.status:
                 pdf.set_x(pdf.l_margin)
-                pdf.multi_cell(0, 6, _sanitize(f"Resumen: {summary_str}"))
+                pdf.multi_cell(0, 6, _sanitize(f"Estado: {c.status}"))
             pdf.ln(3)
 
         return bytes(pdf.output())

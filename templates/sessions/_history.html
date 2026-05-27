@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Header -->
+<div class="flex items-center justify-between mb-6">
+  <div class="flex items-center gap-3">
+    <a href="/sessions"
+       class="text-gray-400 hover:text-gray-600 transition-colors">
+      <span class="material-symbols-rounded" style="font-size:22px">arrow_back</span>
+    </a>
+    <div>
+      <h1 class="text-xl font-semibold text-gray-800 truncate max-w-lg">{{ preview }}</h1>
+      <p class="text-xs text-gray-400 mt-0.5 font-mono">{{ session_id }}</p>
+    </div>
+  </div>
+  <form method="post" action="/sessions/{{ session_id }}/resume">
+    <button type="submit"
+            class="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors">
+      <span class="material-symbols-rounded" style="font-size:16px">play_arrow</span>
+      Continuar sesión
+    </button>
+  </form>
+</div>
+
+<!-- Conversación -->
+<div class="space-y-4">
+  {% if consultations %}
+    {% for c in consultations %}
+
+    <!-- Pregunta del usuario -->
+    <div class="flex justify-end">
+      <div class="max-w-sm lg:max-w-lg bg-emerald-600 text-white rounded-2xl rounded-br-sm px-4 py-2.5 text-sm leading-relaxed">
+        {{ c.question }}
+      </div>
+    </div>
+
+    <!-- Respuesta de Kapi -->
+    <div class="flex justify-start">
+      <div class="max-w-sm lg:max-w-xl bg-white border border-gray-200 rounded-2xl rounded-bl-sm px-4 py-3 text-sm shadow-sm space-y-2">
+
+        <!--
+          Usamos data-answer con | e (HTML-escape) para evitar que comillas dobles
+          dentro del texto rompan el atributo HTML. Alpine lee el valor ya desescapado
+          desde dataset.answer y lo pasa a marked.parse().
+        -->
+        <div class="prose-kapi text-sm leading-relaxed text-gray-800"
+             x-data
+             x-init="$el.innerHTML = marked.parse($el.dataset.answer)"
+             data-answer="{{ c.answer | e }}"></div>
+
+        {% if c.status %}
+        <div class="pt-1">
+          <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full
+            {% if c.status == 'Crítico' %}bg-red-100 text-red-700 border border-red-200
+            {% elif c.status == 'Moderado' %}bg-amber-100 text-amber-700 border border-amber-200
+            {% else %}bg-emerald-100 text-emerald-700 border border-emerald-200{% endif %}">
+            <span class="material-symbols-rounded"
+                  style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 500">
+              {% if c.status == 'Crítico' %}emergency{% elif c.status == 'Moderado' %}warning{% else %}check_circle{% endif %}
+            </span>
+            {{ c.status }}
+          </span>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+    {% endfor %}
+  {% else %}
+    <div class="text-center text-sm text-gray-400 py-12">
+      Esta sesión no tiene consultas registradas aún.
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

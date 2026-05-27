@@ -1,4 +1,5 @@
 from typing import Generator
+from fastapi import BackgroundTasks
 from Infrastructure.Agents.workflow import kapi
 from Repositories.user_repository import UserRepository
 from Infrastructure.Agents.schemas.agent import InputModel
@@ -24,11 +25,10 @@ class StreamChat:
         question: str,
         session_id: str,
         user_id: str,
+        background_tasks: BackgroundTasks,
     ) -> Generator[ChatEvent, None, None]:
-        
-        # Inyectamos el contexto del usuario
         user_input = InputModel(
             question=question,
             context_user=self._user_repo.get_user_context()
         )
-        return kapi.run_stream(user_input, session_id, user_id, self._save_repo)
+        return kapi.run_stream(user_input, session_id, user_id, self._save_repo, background_tasks)

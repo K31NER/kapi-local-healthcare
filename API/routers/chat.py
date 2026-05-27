@@ -1,9 +1,9 @@
 import json
 import uuid
-from fastapi import APIRouter, Depends
 from API.depends import get_stream_chat
 from API.schemas.chat import ChatStreamInput
 from fastapi.responses import StreamingResponse
+from fastapi import APIRouter, Depends, BackgroundTasks
 from Use_cases.chat.stream_chat import StreamChat, ContentEvent, DoneEvent, ThinkingEvent
 
 router = APIRouter(prefix="/chat", tags=["chat"])
@@ -20,6 +20,7 @@ def _event_to_sse(event) -> str:
             "answer": event.answer,
             "steps": event.steps,
             "summary": event.summary,
+            "status": event.status,
             "session_id": event.session_id,
         })
         return f"event: done\ndata: {payload}\n\n"
@@ -30,12 +31,17 @@ def _event_to_sse(event) -> str:
 @router.post("/stream")
 def chat_stream(
     data: ChatStreamInput,
+    background_tasks: BackgroundTasks,
     stream_uc: StreamChat = Depends(get_stream_chat),
 ):
     session_id = data.session_id or str(uuid.uuid4())
 
+    # Llamada eager: registra background_tasks antes de retornar StreamingResponse,
+    # garantizando que FastAPI capture la tarea de post-procesado.
+    event_generator = stream_uc.execute(data.question, session_id, data.user_id, background_tasks)
+
     def generate():
-        for event in stream_uc.execute(data.question, session_id,data.user_id):
+        for event in event_generator:
             yield _event_to_sse(event)
 
     return StreamingResponse(

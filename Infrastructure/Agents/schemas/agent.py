@@ -1,12 +1,12 @@
 from pydantic import BaseModel, Field
-from typing import Dict, List,Optional
+from typing import List, Literal
 from Domain.user import CacheUser
+
 class InputModel(BaseModel):
     question: str
-    context_user: CacheUser = Field(...,description="Contexto del usuario")
+    context_user: CacheUser = Field(..., description="Contexto del usuario")
 
 class ResponseModel(BaseModel):
-    analysis: str = Field(...,description="Analisis de detallado del sintoma del usuario")
-    answer: str   = Field(...,description="Tu solucion al problema del paciente en base al analysis que hiciste")
-    steps: Optional[List[str]] = Field(...,description="Lista de recomendacion que debe seguir paso paso")
-    summary: Dict[str,str] = Field(...,description="Resumen la interaccion")
+    analysis: str = Field(..., description="Análisis clínico interno basado en los síntomas expuestos.")
+    steps: List[str] = Field(..., description="Lista de recomendaciones y pasos claros, cortos y accionables para el paciente.")
+    status: Literal["Normal", "Moderado", "Crítico"] = Field(..., description="Nivel de gravedad o estado de triaje médico del paciente.")

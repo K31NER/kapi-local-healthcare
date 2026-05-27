@@ -12,6 +12,7 @@ class DoneEvent:
     steps: list[str]
     summary: dict
     session_id: str
+    status: str = ""
 
 @dataclass
 class ErrorEvent:

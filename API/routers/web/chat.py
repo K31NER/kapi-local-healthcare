@@ -1,10 +1,11 @@
 import uuid
+from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import Response
 from API.routers.web._templates import templates
 from API.routers.web._auth import require_session
-from fastapi import APIRouter, Depends, Form, Request
 
 router = APIRouter(tags=["web-chat"])
+
 
 @router.get("/chat", include_in_schema=False)
 async def chat_page(request: Request, _=Depends(require_session)):
@@ -33,5 +34,9 @@ async def chat_send(
 async def chat_new_session(request: Request, _=Depends(require_session)):
     new_id = str(uuid.uuid4())
     request.session["chat_session_id"] = new_id
-    content = f'<input id="chat-session-id" name="session_id" type="hidden" value="{new_id}" hx-swap-oob="outerHTML:#chat-session-id">'
+    short = new_id[:8]
+    content = (
+        f'<input id="chat-session-id" name="session_id" type="hidden" value="{new_id}" hx-swap-oob="outerHTML:#chat-session-id">'
+        f'<span id="session-id-label" class="text-xs text-gray-300 font-mono truncate max-w-[200px]" title="{new_id}" hx-swap-oob="outerHTML:#session-id-label">{short}…</span>'
+    )
     return Response(content=content, media_type="text/html")
